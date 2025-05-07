@@ -1,5 +1,6 @@
 --// Services
 local HttpService = game:GetService("HttpService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --// Your Discord Webhook URL
 local webhookUrl = "https://discord.com/api/webhooks/1369722486949941328/OVLJ_uYmG_AF4XuXysAW5Hpn28GJjIAJbdOwrkMLf5yccSfr9hbZpcMV0ZwTWq-AOjTr"
@@ -8,15 +9,15 @@ local webhookUrl = "https://discord.com/api/webhooks/1369722486949941328/OVLJ_uY
 local function sendDungeonNotification(dungeonName, threatLevel)
 	local data = {
 		username = "ARISE Dungeon Notifier",
-		avatar_url = "https://i.imgur.com/Bs6Rc0L.png", -- optional Arise-themed icon
+		avatar_url = "https://i.imgur.com/Bs6Rc0L.png",
 		embeds = {{
 			title = "**New Dungeon Detected!**",
 			description = string.format("**Dungeon Name:** %s\n**Threat Level:** %s", dungeonName, threatLevel),
-			color = 11730954, -- Purple/black Arise theme
+			color = 11730954,
 			footer = {
 				text = "Solo Leveling: Arise x Dungeon Notifier"
 			},
-			timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ") -- UTC format
+			timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
 		}}
 	}
 
@@ -29,9 +30,9 @@ local function sendDungeonNotification(dungeonName, threatLevel)
 	end
 end
 
---// Simulate or connect to dungeon trigger
--- Replace this with your actual event or logic
-game.ReplicatedStorage:WaitForChild("DungeonNotifier").OnServerEvent:Connect(function(player, dungeonData)
+--// Connect to BindableEvent
+local notifierEvent = ReplicatedStorage:WaitForChild("DungeonNotifier")
+notifierEvent.Event:Connect(function(dungeonData)
 	local name = dungeonData.dungeonName or "Unknown"
 	local level = dungeonData.threatLevel or "???"
 	sendDungeonNotification(name, level)
