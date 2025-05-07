@@ -1,0 +1,38 @@
+--// Services
+local HttpService = game:GetService("HttpService")
+
+--// Your Discord Webhook URL
+local webhookUrl = "https://discord.com/api/webhooks/1369722486949941328/OVLJ_uYmG_AF4XuXysAW5Hpn28GJjIAJbdOwrkMLf5yccSfr9hbZpcMV0ZwTWq-AOjTr"
+
+--// Function to send to Discord
+local function sendDungeonNotification(dungeonName, threatLevel)
+	local data = {
+		username = "ARISE Dungeon Notifier",
+		avatar_url = "https://i.imgur.com/Bs6Rc0L.png", -- optional Arise-themed icon
+		embeds = {{
+			title = "**New Dungeon Detected!**",
+			description = string.format("**Dungeon Name:** %s\n**Threat Level:** %s", dungeonName, threatLevel),
+			color = 11730954, -- Purple/black Arise theme
+			footer = {
+				text = "Solo Leveling: Arise x Dungeon Notifier"
+			},
+			timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ") -- UTC format
+		}}
+	}
+
+	local success, err = pcall(function()
+		HttpService:PostAsync(webhookUrl, HttpService:JSONEncode(data), Enum.HttpContentType.ApplicationJson)
+	end)
+
+	if not success then
+		warn("Failed to send Discord notification:", err)
+	end
+end
+
+--// Simulate or connect to dungeon trigger
+-- Replace this with your actual event or logic
+game.ReplicatedStorage:WaitForChild("DungeonNotifier").OnServerEvent:Connect(function(player, dungeonData)
+	local name = dungeonData.dungeonName or "Unknown"
+	local level = dungeonData.threatLevel or "???"
+	sendDungeonNotification(name, level)
+end)
